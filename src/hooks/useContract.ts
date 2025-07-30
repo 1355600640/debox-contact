@@ -177,7 +177,7 @@ async function switchToBSC() {
   }
 }
 
-const usdtAddress = "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"; // BSC上的USDT地址
+const usdtAddress = "0x55d398326f99059fF775485246999027B3197955"; // BSC上的USDT地址
 const erc20Abi = [
     {
         "constant": false,
@@ -276,7 +276,8 @@ export async function callContractMethod(amount: number,address?:string) {
     const decimals = await usdtContract.decimals();
     // const formattedBalance = ethers.formatUnits(balance, decimals);
     const usdt = ethers.parseUnits((amount).toString(), decimals); // 0.001 USDT
-
+    const bnbBalance = await (window as any).ethersProvider.getBalance(address);
+    console.log("bnbBalance:",bnbBalance);
     console.log("余额:",balance,'地址:',myAddress);
     console.log("合约地址:",contractAddress,'代币地址:',usdtAddress);
     // if (parseFloat(formattedBalance) < amount) {

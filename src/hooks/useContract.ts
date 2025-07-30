@@ -333,7 +333,7 @@ export async function callContractMethod(amount: number, address?: string) {
       * @param amount 支付的 ERC20 代币总额。
       * @param shareAmount 在 ERC20 代币支付总额中，用于 Shares 分佣的代币量。
       */
-      console.log("usdt:", usdt, "amount:", (amount * 0.02).toString());
+      console.log("usdt:", usdt, "amount:", (amount * 0.02).toFixed(decimals));
       const paymentVBox = TokenMath.multiplyAndParse(amount, 0.02, decimals)
       console.log("paymentVBox:", paymentVBox);
       const tx = await contract.payAndShareWithERC20(

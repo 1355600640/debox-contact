@@ -255,7 +255,7 @@ export class TokenMath {
     const result = Number(a) * Number(b);
     console.log("result:", result,Math.min(decimals,18));
     // 转换成字符串并截断到指定精度
-    const fixed = result.toFixed(decimals);
+    const fixed = result.toFixed(Math.min(decimals,18));
     console.log("fixed:", fixed);
     return ethers.parseUnits(fixed, decimals);
   }

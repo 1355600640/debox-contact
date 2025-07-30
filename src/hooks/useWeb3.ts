@@ -10,7 +10,7 @@ export const useWeb3 = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string>('');
-  const [disconnect, setDisconnect] = useState(false);
+  const [_disconnect, setDisconnect] = useState(false);
   // const ethereum = (window as any).ethereum;
   const [intervalTime, setIntervalTime] = useState<NodeJS.Timeout | null>(null)
 

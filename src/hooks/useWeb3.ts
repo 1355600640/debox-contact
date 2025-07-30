@@ -48,6 +48,7 @@ export const useWeb3 = () => {
   }
 
   useEffect(() => {
+    intervalTime && clearInterval(intervalTime)
     const nowInterval = setInterval(async () => {
       if ((window as any).deboxWallet) {
         const signer = await (window as any).ethersProvider.getSigner();

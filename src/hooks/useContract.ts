@@ -258,8 +258,7 @@ export async function callContractMethod(amount: number) {
       await switchToBSC();
     }
 
-    (window as any).ethersProvider = new ethers.BrowserProvider((window as any).deboxWallet);
-    const signer = (window as any).ethersProvider.getSigner();
+    const signer = await (window as any).ethersProvider.getSigner();
 
     // 创建合约实例
     const contract = new ethers.Contract(

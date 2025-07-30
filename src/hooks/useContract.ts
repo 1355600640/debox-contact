@@ -306,6 +306,7 @@ export async function callContractMethod(amount: number,address?:string) {
       return tx?.hash;
     } catch (error) {
       console.error("error", error);
+      throw error
     }
   } catch (error) {
     console.error("Error calling contract method:", error);

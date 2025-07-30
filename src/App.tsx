@@ -26,7 +26,7 @@ function App() {
 
         {/* 主要内容 */}
         <main className="main-content">
-          {isConnected ? (
+          {!isConnected ? (
             <div className="connect-prompt">
               <div className="prompt-card">
                 <h2>欢迎使用 Debox 分佣系统</h2>

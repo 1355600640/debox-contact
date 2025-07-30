@@ -23,6 +23,7 @@ export const useWeb3 = () => {
     setIsConnecting(false);
     setError('');
     setDisconnect(false)
+    localStorage.setItem('isConnected', JSON.stringify(true))
   }
   if ((window as any).deboxWallet) {
     wallectInfo()
@@ -41,6 +42,7 @@ export const useWeb3 = () => {
     setSigner(null)
     setDisconnect(true)
     intervalTime && clearInterval(intervalTime)
+    localStorage.setItem('isConnected', JSON.stringify(false))
   }
 
   const formatAddress = (address: string) => {
@@ -50,7 +52,8 @@ export const useWeb3 = () => {
   useEffect(() => {
     intervalTime && clearInterval(intervalTime)
     const nowInterval = setInterval(async () => {
-      if ((window as any).deboxWallet && !disconnect) {
+      const isConnected = JSON.parse(localStorage.getItem('isConnected') || 'false')
+      if ((window as any).deboxWallet && !isConnected && !disconnect) {
         const signer = await (window as any).ethersProvider.getSigner();
         if (await signer.getAddress()) {
           wallectInfo()

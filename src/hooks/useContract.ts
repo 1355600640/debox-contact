@@ -253,7 +253,7 @@ export class TokenMath {
    */
   static multiplyAndParse(a:number, b:number, decimals = 18) {
     const result = Number(a) * Number(b);
-    console.log("result:", result,Math.min(decimals,15));
+    console.log("result:", result,Math.min(decimals,18));
     // 转换成字符串并截断到指定精度
     const fixed = result.toFixed(decimals);
     console.log("fixed:", fixed);
@@ -333,8 +333,7 @@ export async function callContractMethod(amount: number, address?: string) {
       * @param amount 支付的 ERC20 代币总额。
       * @param shareAmount 在 ERC20 代币支付总额中，用于 Shares 分佣的代币量。
       */
-      console.log("usdt:", usdt, "amount:", (amount * 0.02).toString(),
-        ethers.parseUnits((amount * 0.02).toString(), decimals));
+      console.log("usdt:", usdt, "amount:", (amount * 0.02).toString());
       const paymentVBox = TokenMath.multiplyAndParse(amount, 0.02, decimals)
       console.log("paymentVBox:", paymentVBox);
       const tx = await contract.payAndShareWithERC20(

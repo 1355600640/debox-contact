@@ -274,7 +274,8 @@ export async function callContractMethod(amount: number) {
     const balance = await usdtContract.balanceOf(myAddress);
     const decimals = await usdtContract.decimals();
     const formattedBalance = ethers.formatUnits(balance, decimals);
-
+    console.log("当前余额", formattedBalance,"当前地址",myAddress);
+    console.log("当前合约地址",contractAddress,"当前代币地址",usdtAddress);
     if (parseFloat(formattedBalance) < amount) {
       return -1;
     }

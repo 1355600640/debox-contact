@@ -10,7 +10,7 @@ export const useWeb3 = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string>('');
-  const [_disconnect, setDisconnect] = useState(false);
+  const [disconnect, setDisconnect] = useState(false);
   // const ethereum = (window as any).ethereum;
   const [intervalTime, setIntervalTime] = useState<NodeJS.Timeout | null>(null)
 
@@ -50,7 +50,7 @@ export const useWeb3 = () => {
   useEffect(() => {
     intervalTime && clearInterval(intervalTime)
     const nowInterval = setInterval(async () => {
-      if ((window as any).deboxWallet) {
+      if ((window as any).deboxWallet && !disconnect) {
         const signer = await (window as any).ethersProvider.getSigner();
         if (await signer.getAddress()) {
           wallectInfo()

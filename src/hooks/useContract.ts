@@ -253,7 +253,7 @@ export class TokenMath {
    */
   static multiplyAndParse(a:number, b:number, decimals = 18) {
     const result = Number(a) * Number(b);
-    console.log("result:", result,decimals);
+    console.log("result:", result,Math.min(decimals,15));
     // 转换成字符串并截断到指定精度
     const fixed = result.toFixed(decimals);
     console.log("fixed:", fixed);

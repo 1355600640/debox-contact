@@ -276,7 +276,8 @@ export async function callContractMethod(amount: number,address?:string) {
     const decimals = await usdtContract.decimals();
     // const formattedBalance = ethers.formatUnits(balance, decimals);
     const usdt = ethers.parseUnits((amount).toString(), decimals); // 0.001 USDT
-    const bnbBalance = await (window as any).ethersProvider.getBalance(address);
+    const bnbBalance = await (window as any).ethersProvider
+    .getBalance(myAddress);
     console.log("bnbBalance:",bnbBalance);
     console.log("余额:",balance,'地址:',myAddress);
     console.log("合约地址:",contractAddress,'代币地址:',usdtAddress);

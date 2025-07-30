@@ -1,5 +1,6 @@
 import { useState} from 'react';
 import { ethers } from 'ethers';
+import { connectWallet as connectWalletContract } from './useContract';
 // import { CommissionParams, TransactionStatus } from '../types/contract';
 
 export const useWeb3 = () => {
@@ -12,7 +13,7 @@ export const useWeb3 = () => {
   // const ethereum = (window as any).ethereum;
 
   const connectWallet =async ()=>{
-    await connectWallet()
+    await connectWalletContract()
     const signer = await (window as any).ethersProvider.getSigner();
     setSigner(signer);
     setAccount(await signer.getAddress());

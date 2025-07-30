@@ -161,6 +161,9 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .info-item:last-child {
@@ -252,9 +255,9 @@
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .payment-container {
+  /* .payment-container {
     padding: 16px;
-  }
+  } */
 
   .payment-card {
     padding: 24px;

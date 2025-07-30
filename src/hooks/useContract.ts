@@ -273,14 +273,14 @@ export async function callContractMethod(amount: number,address?:string) {
 
     const myAddress = await signer.getAddress()
     const balance = await usdtContract.balanceOf(myAddress);
-    const decimals = await usdtContract.decimals();
-    const formattedBalance = ethers.formatUnits(balance, decimals);
+    // const decimals = await usdtContract.decimals();
+    // const formattedBalance = ethers.formatUnits(balance, decimals);
 
     console.log("余额:",balance,'地址:',myAddress);
     console.log("合约地址:",contractAddress,'代币地址:',usdtAddress);
-    if (parseFloat(formattedBalance) < amount) {
-      return -1;
-    }
+    // if (parseFloat(formattedBalance) < amount) {
+    //   return -1;
+    // }
     
 
     try {

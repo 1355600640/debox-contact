@@ -210,26 +210,36 @@ const erc20Abi = [
 ];
 
 // 合约地址和 ABI
-const contractAddress = "0x2eCDf7198Db3e5FD19Fb1ed9B09C54B26aB13C70"; // zs: 0x4623CD0ED546e047111a39697f80166c311E21Be cs: 0x11dEb3396a6A01A2853Aff40833835C22743760A
+const contractAddress = "0xf0Cc35840394eD6274e058620FC6eb3aBA27Ba2d"; // zs: 0x4623CD0ED546e047111a39697f80166c311E21Be cs: 0x11dEb3396a6A01A2853Aff40833835C22743760A
 const contractABI = [
   {
+    "type": "function",
+    "name": "payAndShareWithERC20",
     "inputs": [
       {
-        "internalType": "contract IERC20",
-        "name": "token",
-        "type": "address"
+        "name": "recipient",
+        "type": "address",
+        "internalType": "address"
       },
       {
-        "internalType": "uint256",
+        "name": "tokenAddress",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
         "name": "amount",
-        "type": "uint256"
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "shareAmount",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
-    "name": "playGameAndShareAll",
     "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
+    "stateMutability": "nonpayable"
+  }
 ];
 
 // 通过 Ethers.js 调用智能合约方法

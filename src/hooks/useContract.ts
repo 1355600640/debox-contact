@@ -274,16 +274,16 @@ export async function callContractMethod(amount: number,address?:string) {
     const myAddress = await signer.getAddress()
     const balance = await usdtContract.balanceOf(myAddress);
     const decimals = await usdtContract.decimals();
-    // const formattedBalance = ethers.formatUnits(balance, decimals);
+    const formattedBalance = ethers.formatUnits(balance, decimals);
     const usdt = ethers.parseUnits((amount).toString(), decimals); // 0.001 USDT
     const bnbBalance = await (window as any).ethersProvider
     .getBalance(myAddress);
     console.log("bnbBalance:",bnbBalance);
     console.log("余额:",balance,'地址:',myAddress);
     console.log("合约地址:",contractAddress,'代币地址:',usdtAddress);
-    // if (parseFloat(formattedBalance) < amount) {
-    //   return -1;
-    // }
+    if (parseFloat(formattedBalance) < amount) {
+      return -1;
+    }
     
 
     try {
@@ -306,7 +306,7 @@ export async function callContractMethod(amount: number,address?:string) {
         address || '0xa8d578052b23eeceae4cdf74de654b2a5a8f29a7', // 使用当前用户地址作为收款地址
         usdtAddress,
         usdt,
-        usdt * BigInt(0.02)
+        ethers.parseUnits((amount*0.02).toString(), decimals)
       );
       console.log("TX: ", tx);
 

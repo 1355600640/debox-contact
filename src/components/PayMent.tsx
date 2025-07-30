@@ -12,9 +12,9 @@ export const PayMent = () => {
 
   const handlePayment = async () => {
     console.log('开始支付流程...', { inputNumber, isConnected });
-    const val = Number(inputNumber) || 0
-    if (!val || val <= 0) {
-      console.warn('支付金额无效:', val);
+
+    if (!inputNumber || parseFloat(inputNumber) <= 0) {
+      console.warn('支付金额无效:', inputNumber);
       alert('请输入有效金额');
       return;
     }
@@ -26,18 +26,43 @@ export const PayMent = () => {
     }
 
     setIsLoading(true);
-    console.log('调用合约方法...', { amount: val });
+    const amount = parseFloat(inputNumber);
+    console.log('调用合约方法...', { amount });
 
     try {
-      await callContractMethod(val,receivingAddress);
-      console.log('支付成功!');
+      const result = await callContractMethod(amount);
+
+      if (result === -1) {
+        console.error('余额不足');
+        alert('余额不足，请检查您的USDT余额');
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('支付成功!', result);
       setIsLoading(false);
-      alert('支付成功！');
-      // setInputNumber(undefined);
-    } catch (error) {
+      alert('支付成功！交易哈希: ' + result);
+      setInputNumber(undefined);
+    } catch (error: any) {
       console.error('支付失败:', error);
       setIsLoading(false);
-      alert('支付失败，请重试');
+
+      // 根据错误类型提供更具体的错误信息
+      let errorMessage = '支付失败，请重试';
+
+      if (error.message.includes('transaction indexing is in progress')) {
+        errorMessage = '交易正在处理中，请稍后查看交易状态';
+      } else if (error.message.includes('user rejected')) {
+        errorMessage = '用户取消了交易';
+      } else if (error.message.includes('insufficient funds')) {
+        errorMessage = '余额不足，请检查您的USDT余额';
+      } else if (error.message.includes('gas')) {
+        errorMessage = 'Gas费用不足，请检查您的BNB余额';
+      } else if (error.message.includes('timeout')) {
+        errorMessage = '交易确认超时，请检查交易状态';
+      }
+
+      alert(errorMessage);
     }
   };
 

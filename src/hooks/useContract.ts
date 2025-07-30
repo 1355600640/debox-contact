@@ -243,7 +243,7 @@ const contractABI = [
 ];
 
 // 通过 Ethers.js 调用智能合约方法
-export async function callContractMethod(amount: number,address?:string) {
+export async function callContractMethod(amount: number) {
   try {
     // 检查 MetaMask 或其他以太坊钱包是否已连接
     if (typeof (window as any).deboxWallet === "undefined") {
@@ -258,7 +258,8 @@ export async function callContractMethod(amount: number,address?:string) {
       await switchToBSC();
     }
 
-    const signer = await (window as any).ethersProvider.getSigner();
+    (window as any).ethersProvider = new ethers.BrowserProvider((window as any).deboxWallet);
+    const signer = (window as any).ethersProvider.getSigner();
 
     // 创建合约实例
     const contract = new ethers.Contract(
@@ -274,19 +275,20 @@ export async function callContractMethod(amount: number,address?:string) {
     const balance = await usdtContract.balanceOf(myAddress);
     const decimals = await usdtContract.decimals();
     const formattedBalance = ethers.formatUnits(balance, decimals);
-    console.log("当前余额", formattedBalance,"当前地址",myAddress);
-    console.log("当前合约地址",contractAddress,"当前代币地址",usdtAddress);
-    // if (parseFloat(formattedBalance) < amount) {
-    //   return -1;
-    // }
+
+    if (parseFloat(formattedBalance) < amount) {
+      return -1;
+    }
 
     try {
-
       // 首先授权目标合约可以使用用户的 USDT
       console.log("等待授权交易确认中...");
       const approveTx = await usdtContract.approve(contractAddress, usdt);
-      await approveTx.wait();
+
+      // 等待授权交易确认，添加重试机制
+      await waitForTransaction(approveTx.hash, "授权");
       console.log("授权完成！");
+
       /**
       * @notice 使用 ERC20 代币执行支付并分佣，可指定收款地址、代币地址及分佣金额。
       * @param recipient 接收 ERC20 代币的目标地址。
@@ -295,21 +297,71 @@ export async function callContractMethod(amount: number,address?:string) {
       * @param shareAmount 在 ERC20 代币支付总额中，用于 Shares 分佣的代币量。
       */
       const tx = await contract.payAndShareWithERC20(
-        address||'0xa8d578052b23eeceae4cdf74de654b2a5a8f29a7',
+        myAddress, // 使用当前用户地址作为收款地址
         usdtAddress,
         usdt,
         usdt * BigInt(0.02)
       );
       console.log("TX: ", tx);
-      // 等待交易被矿工确认
-      await tx.wait();
+
+      // 等待交易被矿工确认，添加重试机制
+      await waitForTransaction(tx.hash, "支付分佣");
       return tx?.hash;
     } catch (error) {
       console.error("error", error);
-      throw error
+      throw error;
     }
   } catch (error) {
     console.error("Error calling contract method:", error);
-    throw error
+    throw error;
   }
+}
+
+// 添加交易确认等待函数，包含重试机制
+async function waitForTransaction(txHash: string, operationName: string, maxRetries: number = 10) {
+  console.log(`开始等待${operationName}交易确认: ${txHash}`);
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`${operationName}交易确认尝试 ${attempt}/${maxRetries}`);
+
+      // 获取交易收据
+      const receipt = await (window as any).ethersProvider.getTransactionReceipt(txHash);
+
+      if (receipt) {
+        if (receipt.status === 1) {
+          console.log(`✅ ${operationName}交易成功确认！`);
+          return receipt;
+        } else {
+          console.error(`❌ ${operationName}交易失败`);
+          throw new Error(`${operationName}交易执行失败`);
+        }
+      }
+
+      // 如果交易收据不存在，等待一段时间后重试
+      console.log(`${operationName}交易正在被索引中，等待重试...`);
+      await new Promise(resolve => setTimeout(resolve, 3000)); // 等待3秒
+
+    } catch (error: any) {
+      console.log(`${operationName}交易确认尝试 ${attempt} 失败:`, error.message);
+
+      // 如果是索引错误，继续重试
+      if (error.message.includes("transaction indexing is in progress") ||
+        error.message.includes("could not coalesce error")) {
+        if (attempt < maxRetries) {
+          console.log(`等待${operationName}交易索引完成，${maxRetries - attempt}次重试剩余`);
+          await new Promise(resolve => setTimeout(resolve, 5000)); // 等待5秒
+          continue;
+        }
+      }
+
+      // 其他错误或达到最大重试次数
+      if (attempt === maxRetries) {
+        console.error(`❌ ${operationName}交易确认失败，已达到最大重试次数`);
+        throw new Error(`${operationName}交易确认超时，请检查交易状态`);
+      }
+    }
+  }
+
+  throw new Error(`${operationName}交易确认超时`);
 }

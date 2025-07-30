@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState} from 'react';
 import { ethers } from 'ethers';
-import { DEBOX_COMMISSION_CONTRACT } from '../config/contracts';
 // import { CommissionParams, TransactionStatus } from '../types/contract';
 
 export const useWeb3 = () => {
@@ -35,6 +34,7 @@ export const useWeb3 = () => {
   isConnected,
   isConnecting,
   error,
-  formatAddress
+  formatAddress,
+  provider
  }
 }; 

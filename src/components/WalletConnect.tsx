@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wallet, LogOut } from 'lucide-react';
+import { Wallet } from 'lucide-react';
 import { useWeb3 } from '../hooks/useWeb3';
 import './WalletConnect.css';
 interface WalletConnectProps {

@@ -3,6 +3,7 @@ import { WalletConnect } from './components/WalletConnect';
 import { useWeb3 } from './hooks/useWeb3';
 import { DEBOX_COMMISSION_CONTRACT } from './config/contracts';
 import './app.css';
+import { PayMent } from './components/PayMent';
 
 function App() {
   const { isConnected } = useWeb3();
@@ -25,7 +26,7 @@ function App() {
 
         {/* 主要内容 */}
         <main className="main-content">
-          {!isConnected ? (
+          {isConnected ? (
             <div className="connect-prompt">
               <div className="prompt-card">
                 <h2>欢迎使用 Debox 分佣系统</h2>
@@ -75,7 +76,7 @@ function App() {
                   className={`tab-button ${activeTab === 'form' ? 'active' : ''}`}
                   onClick={() => setActiveTab('form')}
                 >
-                  分发分佣
+                  分佣支付
                 </button>
                 <button
                   className={`tab-button ${activeTab === 'history' ? 'active' : ''}`}
@@ -86,10 +87,10 @@ function App() {
               </div>
 
               {/* 标签页内容 */}
-              {/* <div className="tab-content">
-                {activeTab === 'form' && <CommissionForm />}
-                {activeTab === 'history' && <CommissionHistory />}
-              </div> */}
+              <div className="tab-content">
+                {activeTab === 'form' && <PayMent />}
+                {/* {activeTab === 'history' && <CommissionHistory />} */}
+              </div>
             </>
           )}
         </main>

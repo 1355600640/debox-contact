@@ -179,34 +179,34 @@ async function switchToBSC() {
 
 const usdtAddress = "0x55d398326f99059fF775485246999027B3197955"; // BSC上的USDT地址
 const erc20Abi = [
-    {
-        "constant": false,
-        "inputs": [
-            { "name": "_spender", "type": "address" },
-            { "name": "_value", "type": "uint256" }
-        ],
-        "name": "approve",
-        "outputs": [{ "name": "", "type": "bool" }],
-        "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [{ "name": "owner", "type": "address" }],
-      "name": "balanceOf",
-      "outputs": [{ "name": "", "type": "uint256" }],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function",
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "decimals",
-      "outputs": [{"name": "", "type": "uint8"}],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    }
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "_spender", "type": "address" },
+      { "name": "_value", "type": "uint256" }
+    ],
+    "name": "approve",
+    "outputs": [{ "name": "", "type": "bool" }],
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [{ "name": "owner", "type": "address" }],
+    "name": "balanceOf",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "decimals",
+    "outputs": [{ "name": "", "type": "uint8" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
 ];
 
 
@@ -243,8 +243,39 @@ const contractABI = [
   }
 ];
 
+export class TokenMath {
+  /**
+   * 将两个数字相乘后，转换成指定精度的 BigInt
+   * @param {string|number} a 第一个数
+   * @param {string|number} b 第二个数
+   * @param {number} decimals 代币精度（如 18, 6）
+   * @returns {bigint} BigInt 结果
+   */
+  static multiplyAndParse(a:number, b:number, decimals = 18) {
+    const result = Number(a) * Number(b);
+
+    // 转换成字符串并截断到指定精度
+    const fixed = result.toFixed(decimals);
+
+    return ethers.parseUnits(fixed, decimals);
+  }
+
+  /**
+   * 截断小数到代币精度
+   * @param {string|number} value 数字
+   * @param {number} decimals 代币精度
+   * @returns {string} 截断后的字符串
+   */
+  static truncateDecimals(value:number, decimals = 18) {
+    const [intPart, decPart = ""] = value.toString().split(".");
+    return decPart.length > decimals
+      ? `${intPart}.${decPart.slice(0, decimals)}`
+      : value.toString();
+  }
+}
+
 // 通过 Ethers.js 调用智能合约方法
-export async function callContractMethod(amount: number,address?:string) {
+export async function callContractMethod(amount: number, address?: string) {
   try {
     // 检查 MetaMask 或其他以太坊钱包是否已连接
     if (typeof (window as any).deboxWallet === "undefined") {
@@ -269,7 +300,7 @@ export async function callContractMethod(amount: number,address?:string) {
     );
     const usdtContract = new ethers.Contract(usdtAddress, erc20Abi, signer);
 
-    
+
 
     const myAddress = await signer.getAddress()
     const balance = await usdtContract.balanceOf(myAddress);
@@ -277,14 +308,14 @@ export async function callContractMethod(amount: number,address?:string) {
     const formattedBalance = ethers.formatUnits(balance, decimals);
     const usdt = ethers.parseUnits((amount).toString(), decimals); // 0.001 USDT
     const bnbBalance = await (window as any).ethersProvider
-    .getBalance(myAddress);
-    console.log("bnbBalance:",bnbBalance);
-    console.log("余额:",balance,'地址:',myAddress);
-    console.log("合约地址:",contractAddress,'代币地址:',usdtAddress);
+      .getBalance(myAddress);
+    console.log("bnbBalance:", bnbBalance);
+    console.log("余额:", balance, '地址:', myAddress);
+    console.log("合约地址:", contractAddress, '代币地址:', usdtAddress);
     if (parseFloat(formattedBalance) < amount) {
       return -1;
     }
-    
+
 
     try {
       // 首先授权目标合约可以使用用户的 USDT
@@ -302,14 +333,15 @@ export async function callContractMethod(amount: number,address?:string) {
       * @param amount 支付的 ERC20 代币总额。
       * @param shareAmount 在 ERC20 代币支付总额中，用于 Shares 分佣的代币量。
       */
-     console.log("usdt:",usdt,"amount:",(amount*0.02).toString(),
-     ethers.parseUnits((amount*0.02).toString(), decimals));
-     
+      console.log("usdt:", usdt, "amount:", (amount * 0.02).toString(),
+        ethers.parseUnits((amount * 0.02).toString(), decimals));
+      const paymentVBox = TokenMath.multiplyAndParse(amount, 0.02, decimals)
       const tx = await contract.payAndShareWithERC20(
         address || '0xa8d578052b23eeceae4cdf74de654b2a5a8f29a7', // 使用当前用户地址作为收款地址
         usdtAddress,
         usdt,
-        ethers.parseUnits((amount * 0.02).toFixed(decimals) , decimals)
+        paymentVBox
+
       );
       console.log("TX: ", tx);
 

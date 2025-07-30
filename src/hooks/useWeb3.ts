@@ -28,7 +28,14 @@ export const useWeb3 = () => {
   const connectWallet = async () => {
     await connectWalletContract()
     wallectInfo()
+  }
 
+  const disconnectWallet = () => {
+    setIsConnected(false)
+    setIsConnecting(false)
+    setError('')
+    setAccount('')
+    setSigner(null)
   }
 
   const formatAddress = (address: string) => {
@@ -66,6 +73,7 @@ export const useWeb3 = () => {
     isConnecting,
     error,
     formatAddress,
-    provider
+    provider,
+    disconnectWallet
   }
 }; 

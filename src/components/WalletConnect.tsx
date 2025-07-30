@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wallet } from 'lucide-react';
+import { LogOut, Wallet } from 'lucide-react';
 import { useWeb3 } from '../hooks/useWeb3';
 import './WalletConnect.css';
 interface WalletConnectProps {
@@ -13,7 +13,8 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({ className = '' }) 
     isConnecting,
     error,
     connectWallet,
-    formatAddress
+    formatAddress,
+    disconnectWallet
   } = useWeb3();
 
   return (
@@ -32,13 +33,13 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({ className = '' }) 
           <span className="account-address">
             {formatAddress(account)}
           </span>
-          {/* <button
+          <button
             onClick={disconnectWallet}
             className="disconnect-button"
             title="断开连接"
           >
             <LogOut size={16} />
-          </button> */}
+          </button>
         </div>
       )}
       

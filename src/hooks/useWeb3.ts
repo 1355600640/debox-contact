@@ -25,9 +25,7 @@ export const useWeb3 = () => {
     setDisconnect(false)
     localStorage.setItem('isConnected', JSON.stringify(true))
   }
-  if ((window as any).deboxWallet) {
-    wallectInfo()
-  }
+
 
   const connectWallet = async () => {
     await connectWalletContract()
@@ -50,6 +48,9 @@ export const useWeb3 = () => {
   }
 
   useEffect(() => {
+    if ((window as any).deboxWallet) {
+      wallectInfo()
+    }
     intervalTime && clearInterval(intervalTime)
     const nowInterval = setInterval(async () => {
       const isConnected = JSON.parse(localStorage.getItem('isConnected') || 'false')

@@ -30,7 +30,7 @@ export const PayMent = () => {
     console.log('调用合约方法...', { amount });
 
     try {
-      const result = await callContractMethod(amount,receivingAddress);
+      const result = await callContractMethod(amount, receivingAddress);
 
       if (result === -1) {
         console.error('余额不足');
@@ -114,15 +114,16 @@ export const PayMent = () => {
                 step="0.01"
               />
             </div>
+            <div style={{'fontSize':'14px','color':'black','fontWeight':'bold','marginTop':'10px'}}>接收地址</div>
             <div className="input-wrapper">
-              <span className="currency-symbol">接收地址</span>
+              <span className="currency-symbol">D</span>
               <input
-                id="receivingAddress"
+                id="amount"
                 type="text"
                 value={receivingAddress || ''}
                 onChange={handleReceivingAddressChange}
                 placeholder="0.00"
-                className="receiving-address-input"
+                className="amount-input"
               />
             </div>
           </div>

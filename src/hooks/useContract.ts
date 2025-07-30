@@ -275,9 +275,12 @@ export async function callContractMethod(amount: number,address?:string) {
     const decimals = await usdtContract.decimals();
     const formattedBalance = ethers.formatUnits(balance, decimals);
 
+    console.log("余额:",balance,'地址:',myAddress);
+    console.log("合约地址:",contractAddress,'代币地址:',usdtAddress);
     if (parseFloat(formattedBalance) < amount) {
       return -1;
     }
+    
 
     try {
       // 首先授权目标合约可以使用用户的 USDT

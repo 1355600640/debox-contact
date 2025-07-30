@@ -5,16 +5,16 @@ import { callContractMethod } from "../hooks/useContract";
 import { useWeb3 } from "../hooks/useWeb3";
 
 export const PayMent = () => {
-  const [inputNumber, setInputNumber] = useState<number | undefined>();
+  const [inputNumber, setInputNumber] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const { isConnected } = useWeb3();
   const [receivingAddress, setReceivingAddress] = useState<string | undefined>();
 
   const handlePayment = async () => {
     console.log('开始支付流程...', { inputNumber, isConnected });
-
-    if (!inputNumber || inputNumber <= 0) {
-      console.warn('支付金额无效:', inputNumber);
+    const val = Number(inputNumber) || 0
+    if (!val || val <= 0) {
+      console.warn('支付金额无效:', val);
       alert('请输入有效金额');
       return;
     }
@@ -26,10 +26,10 @@ export const PayMent = () => {
     }
 
     setIsLoading(true);
-    console.log('调用合约方法...', { amount: inputNumber });
+    console.log('调用合约方法...', { amount: val });
 
     try {
-      await callContractMethod(inputNumber,receivingAddress);
+      await callContractMethod(val,receivingAddress);
       console.log('支付成功!');
       setIsLoading(false);
       alert('支付成功！');
@@ -53,11 +53,8 @@ export const PayMent = () => {
     if (value === '') {
       setInputNumber(undefined);
     } else {
-      const num = Number(value);
-      if (!isNaN(num) && num >= 0) {
-        setInputNumber(num);
-        console.log('设置金额:', num);
-      }
+      // const num = Number(value);
+      setInputNumber(value);
     }
   };
 
@@ -107,7 +104,7 @@ export const PayMent = () => {
 
           <button
             onClick={handlePayment}
-            disabled={!inputNumber || inputNumber <= 0 || isLoading || !isConnected}
+            disabled={!inputNumber || Number(inputNumber) <= 0 || isLoading || !isConnected}
             className="pay-button"
           >
             {isLoading ? (

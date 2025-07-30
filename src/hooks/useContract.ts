@@ -309,7 +309,7 @@ export async function callContractMethod(amount: number,address?:string) {
         address || '0xa8d578052b23eeceae4cdf74de654b2a5a8f29a7', // 使用当前用户地址作为收款地址
         usdtAddress,
         usdt,
-        ethers.parseUnits((amount * 0.02).toFixed(18) , decimals)
+        ethers.parseUnits((amount * 0.02).toFixed(decimals) , decimals)
       );
       console.log("TX: ", tx);
 

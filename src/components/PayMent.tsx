@@ -55,7 +55,7 @@ export const PayMent = () => {
     }
   };
 
-  console.log('PayMent组件渲染状态:', { inputNumber, isLoading, isConnected });
+  // console.log('PayMent组件渲染状态:', { inputNumber, isLoading, isConnected });
 
   return (
     <div className="payment-container">

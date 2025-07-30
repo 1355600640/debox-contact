@@ -309,5 +309,6 @@ export async function callContractMethod(amount: number,address?:string) {
     }
   } catch (error) {
     console.error("Error calling contract method:", error);
+    throw error
   }
 }

@@ -33,7 +33,7 @@ export const PayMent = () => {
       console.log('支付成功!');
       setIsLoading(false);
       alert('支付成功！');
-      setInputNumber(undefined);
+      // setInputNumber(undefined);
     } catch (error) {
       console.error('支付失败:', error);
       setIsLoading(false);

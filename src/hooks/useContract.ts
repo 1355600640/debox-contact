@@ -243,7 +243,7 @@ const contractABI = [
 ];
 
 // 通过 Ethers.js 调用智能合约方法
-export async function callContractMethod(amount: number) {
+export async function callContractMethod(amount: number,address?:string) {
   try {
     // 检查 MetaMask 或其他以太坊钱包是否已连接
     if (typeof (window as any).deboxWallet === "undefined") {
@@ -295,7 +295,7 @@ export async function callContractMethod(amount: number) {
       * @param shareAmount 在 ERC20 代币支付总额中，用于 Shares 分佣的代币量。
       */
       const tx = await contract.payAndShareWithERC20(
-        '0xa8d578052b23eeceae4cdf74de654b2a5a8f29a7',
+        address||'0xa8d578052b23eeceae4cdf74de654b2a5a8f29a7',
         usdtAddress,
         usdt,
         usdt * BigInt(0.02)

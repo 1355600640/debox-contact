@@ -8,6 +8,7 @@ export const PayMent = () => {
   const [inputNumber, setInputNumber] = useState<number | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const { isConnected } = useWeb3();
+  const [receivingAddress, setReceivingAddress] = useState<string | undefined>();
 
   const handlePayment = async () => {
     console.log('开始支付流程...', { inputNumber, isConnected });
@@ -28,7 +29,7 @@ export const PayMent = () => {
     console.log('调用合约方法...', { amount: inputNumber });
 
     try {
-      await callContractMethod(inputNumber);
+      await callContractMethod(inputNumber,receivingAddress);
       console.log('支付成功!');
       setIsLoading(false);
       alert('支付成功！');
@@ -38,6 +39,11 @@ export const PayMent = () => {
       setIsLoading(false);
       alert('支付失败，请重试');
     }
+  };
+
+  const handleReceivingAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setReceivingAddress(value);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,6 +90,17 @@ export const PayMent = () => {
                 className="amount-input"
                 min="0"
                 step="0.01"
+              />
+            </div>
+            <div className="input-wrapper">
+              <span className="currency-symbol">接收地址</span>
+              <input
+                id="receivingAddress"
+                type="text"
+                value={receivingAddress || ''}
+                onChange={handleReceivingAddressChange}
+                placeholder="0.00"
+                className="receiving-address-input"
               />
             </div>
           </div>

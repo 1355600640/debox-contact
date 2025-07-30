@@ -250,14 +250,30 @@
   gap: 8px;
   color: #666;
   font-size: 14px;
+  margin: 0 0 12px 0;
+}
+
+/* 调试信息样式 */
+.debug-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #ff6b6b;
+  font-size: 12px;
   margin: 0;
+  padding: 8px 12px;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+  font-family: 'Courier New', monospace;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
   /* .payment-container {
-    padding: 16px;
-  } */
+      padding: 16px;
+    } */
 
   .payment-card {
     padding: 24px;

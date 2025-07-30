@@ -10,9 +10,10 @@ export const useWeb3 = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string>('');
+  const [disconnect, setDisconnect] = useState(false);
   // const ethereum = (window as any).ethereum;
 
-  const wallectInfo = async() => {
+  const wallectInfo = async () => {
     const signer = await (window as any).ethersProvider.getSigner();
     setSigner(signer);
     setAccount(await signer.getAddress());
@@ -20,6 +21,7 @@ export const useWeb3 = () => {
     setIsConnected(true);
     setIsConnecting(false);
     setError('');
+    setDisconnect(false)
   }
   if ((window as any).deboxWallet) {
     wallectInfo()
@@ -36,19 +38,20 @@ export const useWeb3 = () => {
     setError('')
     setAccount('')
     setSigner(null)
+    setDisconnect(true)
   }
 
   const formatAddress = (address: string) => {
     return address.slice(0, 6) + '...' + address.slice(-4);
   }
 
-  useEffect(()=>{
-    const interval = setInterval(async() => { 
-      if((window as any).deboxWallet){
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if ((window as any).deboxWallet && !disconnect) {
         const signer = await (window as any).ethersProvider.getSigner();
-        if(await signer.getAddress()){
+        if (await signer.getAddress()) {
           wallectInfo()
-        }else {
+        } else {
           setIsConnected(false)
           setIsConnecting(false)
           setError('')
@@ -58,10 +61,10 @@ export const useWeb3 = () => {
         }
       }
     }, 1000);
-    return ()=>{
+    return () => {
       clearInterval(interval)
     }
-  },[])
+  }, [])
 
 
   // 连接钱包

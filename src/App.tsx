@@ -1,18 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { WalletConnect } from './components/WalletConnect';
 import { useWeb3 } from './hooks/useWeb3';
 import { DEBOX_COMMISSION_CONTRACT } from './config/contracts';
 import './app.css';
 import { PayMent } from './components/PayMent';
+import VConsole from 'vconsole';
 
 function App() {
   const { isConnected } = useWeb3();
   const [activeTab, setActiveTab] = useState<'form' | 'history'>('form');
 
+  // 初始化vConsole
+  useEffect(() => {
+    // 只在开发环境下启用vConsole
+    const vConsole = new VConsole({
+      theme: 'dark',
+      maxLogNumber: 1000,
+      onReady: () => {
+        console.log('🎉 vConsole 已准备就绪！');
+        console.log('📱 您可以在移动设备上查看调试信息');
+        console.log('🖥️ 在桌面端，请按 F12 打开开发者工具');
+      },
+      onClearLog: () => {
+        console.log('🧹 日志已清除');
+      }
+    });
+
+    // 添加一些测试日志
+    console.log('🚀 应用启动');
+    console.log('🔧 开发模式已启用');
+    console.info('ℹ️ 这是一条信息日志');
+    console.warn('⚠️ 这是一条警告日志');
+    console.error('❌ 这是一条错误日志');
+
+    return () => {
+      // 清理vConsole
+      vConsole.destroy();
+    };
+  }, []);
 
   return (
     <div className="app">
-      <div className="app-container">
+      <div className="app-container" style={{ 'paddingBottom': '40px' }}>
         {/* 头部 */}
         <header className="header">
           <div className="header-content">

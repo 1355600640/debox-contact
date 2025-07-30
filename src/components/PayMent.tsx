@@ -30,7 +30,7 @@ export const PayMent = () => {
     console.log('调用合约方法...', { amount });
 
     try {
-      const result = await callContractMethod(amount);
+      const result = await callContractMethod(amount,receivingAddress);
 
       if (result === -1) {
         console.error('余额不足');

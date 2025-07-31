@@ -168,6 +168,11 @@ body {
   font-family: 'Courier New', monospace;
   font-size: 14px;
   font-weight: 600;
+  flex: 1;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: hidden;
 }
 
 /* 标签页导航 */

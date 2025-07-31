@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { WalletConnect } from './components/WalletConnect';
 import { useWeb3 } from './hooks/useWeb3';
-import { DEBOX_COMMISSION_CONTRACT } from './config/contracts';
 import './app.css';
 import { PayMent } from './components/PayMent';
 import { SharesHistory } from './components/SharesHistory';
 import VConsole from 'vconsole';
+import { BNBChainId, BNBParams,contractAddress } from './config/contracts';
 
 function App() {
   const { isConnected } = useWeb3();
@@ -56,7 +56,7 @@ function App() {
 
         {/* 主要内容 */}
         <main className="main-content">
-          {!isConnected ? (
+          {isConnected ? (
             <div className="connect-prompt">
               <div className="prompt-card">
                 <h2>欢迎使用 Debox 分佣系统</h2>
@@ -86,15 +86,15 @@ function App() {
                   <div className="info-grid">
                     <div className="info-item">
                       <span className="label">合约地址:</span>
-                      <span className="value">{DEBOX_COMMISSION_CONTRACT.address}</span>
+                      <span className="value">{contractAddress}</span>
                     </div>
                     <div className="info-item">
                       <span className="label">网络:</span>
-                      <span className="value">{DEBOX_COMMISSION_CONTRACT.network.name}</span>
+                      <span className="value">{BNBParams.chainName}</span>
                     </div>
                     <div className="info-item">
                       <span className="label">链ID:</span>
-                      <span className="value">{DEBOX_COMMISSION_CONTRACT.network.chainId}</span>
+                      <span className="value">{BNBChainId}</span>
                     </div>
                   </div>
                 </div>

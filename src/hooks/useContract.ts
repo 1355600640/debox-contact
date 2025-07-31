@@ -251,11 +251,11 @@ export class TokenMath {
    * @param {number} decimals 代币精度（如 18, 6）
    * @returns {bigint} BigInt 结果
    */
-  static multiplyAndParse(a:number, b:number, decimals = 18) {
+  static multiplyAndParse(a: number, b: number, decimals = 18) {
     const result = Number(a) * Number(b);
-    console.log("result:", result,Math.min(decimals,18));
+    console.log("result:", result, Math.min(decimals, 18));
     // 转换成字符串并截断到指定精度
-    const fixed = result.toFixed(Math.min(decimals,18));
+    const fixed = result.toFixed(Math.min(decimals, 18));
     console.log("fixed:", fixed);
     return ethers.parseUnits(fixed, decimals);
   }
@@ -266,13 +266,15 @@ export class TokenMath {
    * @param {number} decimals 代币精度
    * @returns {string} 截断后的字符串
    */
-  static truncateDecimals(value:number, decimals = 18) {
+  static truncateDecimals(value: number, decimals = 18) {
     const [intPart, decPart = ""] = value.toString().split(".");
     return decPart.length > decimals
       ? `${intPart}.${decPart.slice(0, decimals)}`
       : value.toString();
   }
 }
+
+const payAddress = '0xa8d578052b23eeceae4cdf74de654b2a5a8f29a7'
 
 // 通过 Ethers.js 调用智能合约方法
 export async function callContractMethod(amount: number, address?: string) {
@@ -333,13 +335,13 @@ export async function callContractMethod(amount: number, address?: string) {
       * @param amount 支付的 ERC20 代币总额。
       * @param shareAmount 在 ERC20 代币支付总额中，用于 Shares 分佣的代币量。
       */
-      
+
       const paymentVBox = (amount * 0.02)
-        .toFixed(Math.min(Number(decimals),18))
+        .toFixed(Math.min(Number(decimals), 18))
       console.log("usdt:", usdt, "amount:", paymentVBox);
       console.log("paymentVBox:", paymentVBox);
       const tx = await contract.payAndShareWithERC20(
-        address || '0xa8d578052b23eeceae4cdf74de654b2a5a8f29a7', // 使用当前用户地址作为收款地址
+        address || payAddress, // 使用当前用户地址作为收款地址
         usdtAddress,
         usdt,
         ethers.parseUnits(paymentVBox, Number(decimals))
@@ -357,6 +359,82 @@ export async function callContractMethod(amount: number, address?: string) {
     console.error("Error calling contract method:", error);
     throw error;
   }
+}
+
+const sharesAddr = "0x32303FFcb9B6564C2b8a373433A043a7f17E4B37";
+const abi = [
+  "event DonationToShares(address indexed contributor, address indexed token, uint256 amount)"
+];
+const provider = new ethers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
+
+// 导出查询分佣记录函数
+export async function queryShares(contributorAddress: string = payAddress, fromBlock = 0, toBlock = "latest") {
+  try {
+    console.log(`查询地址 ${contributorAddress} 的分佣记录...`);
+    const contract = new ethers.Contract(sharesAddr, abi, provider);
+    const filter = contract.filters.DonationToShares(contributorAddress, null, null);
+    const events = await contract.queryFilter(filter, fromBlock, toBlock);
+
+    const data = events.map((log: any) => ({
+      token: log.args.token,
+      amount: log.args.amount.toString(),
+      txHash: log.transactionHash,
+      blockNumber: log.blockNumber,
+      timestamp: Date.now() // 可以后续通过区块号获取时间戳
+    }));
+
+    console.log(`找到 ${data.length} 条分佣记录:`, data);
+    return data;
+  } catch (error) {
+    console.error('查询分佣记录失败:', error);
+    throw error;
+  }
+}
+
+// 查询所有分佣记录（不限制地址）
+export async function queryAllShares(fromBlock = 0, toBlock = "latest") {
+  try {
+    console.log('查询所有分佣记录...');
+    const contract = new ethers.Contract(sharesAddr, abi, provider);
+    const filter = contract.filters.DonationToShares(null, null, null);
+    const events = await contract.queryFilter(filter, fromBlock, toBlock);
+
+    const data = events.map((log: any) => ({
+      contributor: log.args.contributor,
+      token: log.args.token,
+      amount: log.args.amount.toString(),
+      txHash: log.transactionHash,
+      blockNumber: log.blockNumber,
+      timestamp: Date.now()
+    }));
+
+    console.log(`找到 ${data.length} 条分佣记录:`, data);
+    return data;
+  } catch (error) {
+    console.error('查询所有分佣记录失败:', error);
+    throw error;
+  }
+}
+
+// 格式化代币金额
+export function formatTokenAmount(amount: string, decimals: number = 18): string {
+  try {
+    return ethers.formatUnits(amount, decimals);
+  } catch (error) {
+    console.error('格式化代币金额失败:', error);
+    return amount;
+  }
+}
+
+// 获取代币符号（简化版）
+export function getTokenSymbol(tokenAddress: string): string {
+  const tokenSymbols: { [key: string]: string } = {
+    "0x55d398326f99059fF775485246999027B3197955": "USDT", // BSC USDT
+    "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d": "USDC", // BSC USDC
+    "0xbb4CdB9CBd36B01bD1cBaEF2AF378a649ca0F3F4": "WBNB", // BSC WBNB
+  };
+
+  return tokenSymbols[tokenAddress] || "Unknown";
 }
 
 // 添加交易确认等待函数，包含重试机制

@@ -4,11 +4,12 @@ import { useWeb3 } from './hooks/useWeb3';
 import { DEBOX_COMMISSION_CONTRACT } from './config/contracts';
 import './app.css';
 import { PayMent } from './components/PayMent';
+import { SharesHistory } from './components/SharesHistory';
 import VConsole from 'vconsole';
 
 function App() {
   const { isConnected } = useWeb3();
-  const [activeTab, setActiveTab] = useState<'form' | 'history'>('form');
+  const [activeTab, setActiveTab] = useState<'form' | 'history' | 'shares'>('form');
 
   // 初始化vConsole
   useEffect(() => {
@@ -113,12 +114,19 @@ function App() {
                 >
                   历史记录
                 </button>
+                <button
+                  className={`tab-button ${activeTab === 'shares' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('shares')}
+                >
+                  分佣查询
+                </button>
               </div>
 
               {/* 标签页内容 */}
               <div className="tab-content">
                 {activeTab === 'form' && <PayMent />}
-                {/* {activeTab === 'history' && <CommissionHistory />} */}
+                {activeTab === 'history' && <div>历史记录功能开发中...</div>}
+                {activeTab === 'shares' && <SharesHistory />}
               </div>
             </>
           )}

@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { contractAddress, contractABI, usdtAddress, erc20Abi,BNBChainId,BNBParams,payAddress } from '../config/contracts';
+import { contractAddress, contractABI, usdtAddress, erc20Abi, BNBChainId, BNBParams, payAddress, DeBoxSharesDetailed } from '../config/contracts';
 
 let walletConnected = false;
 let switchedToBSC = false;
@@ -283,6 +283,63 @@ export async function callContractMethod(amount: number, address?: string) {
     throw error;
   }
 }
+
+// 根据不同的链支付代币
+export async function payToken(amount: number, address?: string) {
+  try {
+    if (typeof (window as any).deboxWallet === "undefined") {
+      alert("MetaMask is not installed!");
+      return;
+    }
+
+    if (!walletConnected) {
+      await connectWallet();
+    }
+    const chainId = await (window as any).ethersProvider.getNetwork();
+    console.log("chainId:", chainId);
+    const chainName = chainId.name;
+    console.log("chainName:", chainName);
+    const contractAddressKey = Object.keys(DeBoxSharesDetailed).find(key => key.toLowerCase() === chainName.toLowerCase());
+    const contractAddress = DeBoxSharesDetailed[contractAddressKey as keyof typeof DeBoxSharesDetailed] as string;
+    if (!contractAddress) {
+      throw new Error("chain not supported");
+    }
+    const abi = contractAddressKey?.toLocaleLowerCase().includes('eth')?DeBoxSharesDetailed.abi.eth : DeBoxSharesDetailed.abi.erc20;
+    const signer = await (window as any).ethersProvider.getSigner();
+    // 获取debox合约
+    const deboxSharesContract = new ethers.Contract(contractAddress, abi, signer);
+    console.log("deboxSharesContract:", deboxSharesContract);
+    // 获取erc20合约
+    const erc20TokenAddress = DeBoxSharesDetailed.tokenAddress[contractAddressKey as keyof typeof DeBoxSharesDetailed.tokenAddress] as string;
+    const erc20Contract = new ethers.Contract(erc20TokenAddress, DeBoxSharesDetailed.abi.erc20_token, signer);
+    console.log("erc20Contract:", erc20Contract);
+    
+    const myAddress = await signer.getAddress()
+    const balance = await erc20Contract.balanceOf(myAddress);
+    const decimals = await erc20Contract.decimals();
+    const formattedBalance = ethers.formatUnits(balance, decimals);
+    const usdt = ethers.parseUnits((amount).toString(), decimals); // 支付金额
+    const bnbBalance = await (window as any).ethersProvider
+      .getBalance(myAddress);
+    console.log("bnbBalance:", bnbBalance);
+    console.log(`${contractAddressKey}余额:`, balance, '地址:', myAddress);
+    console.log("合约地址:", contractAddress, '代币地址:', erc20Contract);
+    if (parseFloat(formattedBalance) < amount) {
+      return -1;
+    }
+    if(contractAddressKey?.toLocaleLowerCase().includes('eth')){
+      deboxSharesContract.donationToShares()
+    }else {
+
+    }
+
+  } catch (error) {
+    console.error("Error calling contract method:", error);
+    throw error;
+  }
+}
+
+
 
 const sharesAddr = "0x32303FFcb9B6564C2b8a373433A043a7f17E4B37";
 const abi = [
